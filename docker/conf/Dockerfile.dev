@@ -1,0 +1,29 @@
+FROM php:8.2-fpm
+
+
+RUN apt-get update \
+    && apt-get install -y \
+        apt-utils \
+    && apt-get install -y \
+        libpq-dev \
+        libzip-dev \
+        libgmp-dev \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) pgsql \
+    && docker-php-ext-install -j$(nproc) pdo_pgsql \
+    && docker-php-ext-install gmp \
+    && apt-get install -y git \
+    && apt-get install -y ffmpeg
+
+RUN apt-get install -y libcurl4-openssl-dev
+RUN apt-get install -y  curl &&\
+    docker-php-ext-install curl
+
+# file permission acl
+RUN apt-get install acl
+
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
